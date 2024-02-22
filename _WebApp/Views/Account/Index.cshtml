@@ -1,0 +1,102 @@
+﻿
+@model IEnumerable<_WebApp.Models.WebAppUser>
+@{
+    ViewData["Title"] = "Users";
+}
+
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-group" role="group">
+                <form id="blockForm" asp-action="Block" method="post">
+                    <input type="hidden" id="blockFormUserIds" name="userIds" />
+                    <button type="submit" class="btn btn-primary">Block</button>
+                </form>
+
+                <form id="unblockForm" asp-action="Unblock" method="post">
+                    <input type="hidden" id="unblockFormUserIds" name="userIds" />
+                    <button type="submit" class="btn btn-warning">Unblock</button>
+                </form>
+
+               <form id="deleteForm" asp-action="Delete" method="post">
+                    <input type="hidden" id="deleteFormUserIds" name="userIds" />
+                    <button type="submit" class="btn btn-secondary">Delete</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+            <table class="table table-hover">
+                    <thead class="thread">
+                    <tr class="table-danger">
+                            <th scope="col"><input type="checkbox" id="selectAll" /></th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Last Login Time</th>
+                            <th scope="col">Registration Time</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                        <tr class="table-light">
+                                <td><input type="checkbox" class="selectSingle" value="@item.Id" /></td>
+                                <td>@item.Name</td>
+                                <td>@item.Email</td>
+                                <td>@item.LastLoginTime</td>
+                                <td>@item.RegisterTime</td>
+                                <td>@(item.IsActive ? "Active" : "Blocked")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectAllCheckbox = document.getElementById('selectAll');
+                const rowCheckboxes = document.querySelectorAll('.selectSingle');
+
+              
+                selectAllCheckbox.addEventListener('click', function () {
+                    
+                    rowCheckboxes.forEach(function (checkbox) {
+                        checkbox.checked = selectAllCheckbox.checked;
+                    });
+                });
+            });
+        </script>
+        <script>
+            $(document).ready(function () {
+                $('#blockForm, #unblockForm, #deleteForm').submit(function (event) {
+                    event.preventDefault();
+
+                  
+                    var formId = $(this).attr('id');
+
+                    
+                    var selectedUserIds = [];
+                    $('input[type="checkbox"]:checked').each(function () {
+                        selectedUserIds.push($(this).val());
+                    });
+                    console.log(selectedUserIds)
+                    
+                    $('#' + formId + 'UserIds').val(selectedUserIds);
+
+                   
+                    $(this).unbind('submit').submit();
+                });
+            });
+        </script>
+    }
